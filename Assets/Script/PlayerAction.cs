@@ -8,6 +8,8 @@ public class PlayerAction : MonoBehaviour
     Rigidbody2D rigid;
     Animator anim;
     bool isHorizonMove;
+    Vector3 dirvec;
+    GameObject scanObject;
 
     void Start()
     {
@@ -50,6 +52,25 @@ public class PlayerAction : MonoBehaviour
         {
             anim.SetBool("isChange", false);
         }
+
+        //방향 : 상
+        if (vDown && v == 1)
+            dirvec = Vector3.up;
+        //방향 : 하
+        if (vDown && v == -1)
+            dirvec = Vector3.down;
+        //방향 : 상
+        if (hDown && h == -1)
+            dirvec = Vector3.left;
+        //방향 : 상
+        if (hDown && h == 1)
+            dirvec = Vector3.right;
+
+        //Scan Object
+        if (Input.GetButtonDown("Jump") && scanObject != null)
+        {
+            Debug.Log("this is " + scanObject.name);
+        }
     }
     private void FixedUpdate()
     {
@@ -57,5 +78,16 @@ public class PlayerAction : MonoBehaviour
             new Vector2(h, 0):
             new Vector2(0, v);
         rigid.linearVelocity = moveVec * 5;
+
+        //Ray
+        Debug.DrawRay(rigid.position, dirvec * 0.7f, new Color(0, 1, 0));
+        RaycastHit2D rayhit = Physics2D.Raycast(rigid.position, dirvec, 0.7f, LayerMask.GetMask("Object"));
+        if (rayhit.collider != null)
+        {
+            //raycast된 오브젝트를 변수로 저장
+            scanObject = rayhit.collider.gameObject;
+        }
+        else
+            scanObject = null;
     }
 }
